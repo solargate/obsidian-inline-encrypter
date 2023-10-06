@@ -1,12 +1,7 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { Editor, MarkdownView, Notice, Plugin } from 'obsidian';
 
-interface InlineEncrypterSettings {
-	ieSetting: string;
-}
-
-const DEFAULT_SETTINGS: InlineEncrypterSettings = {
-	ieSetting: 'default'
-}
+import { InlineEncrypterModal } from './modal';
+import { InlineEncrypterSettings, DEFAULT_SETTINGS, InlineEncrypterSettingTab } from './settings';
 
 export default class InlineEncrypterPlugin extends Plugin {
 	settings: InlineEncrypterSettings;
@@ -31,7 +26,7 @@ export default class InlineEncrypterPlugin extends Plugin {
 			id: 'open-sample-modal-simple',
 			name: 'Open sample modal (simple)',
 			callback: () => {
-				new SampleModal(this.app).open();
+				new InlineEncrypterModal(this.app).open();
 			}
 		});
 		// This adds an editor command that can perform some operation on the current editor instance
@@ -54,7 +49,7 @@ export default class InlineEncrypterPlugin extends Plugin {
 					// If checking is true, we're simply "checking" if the command can be run.
 					// If checking is false, then we want to actually perform the operation.
 					if (!checking) {
-						new SampleModal(this.app).open();
+						new InlineEncrypterModal(this.app).open();
 					}
 
 					// This command will only show up in Command Palette when the check function returns true
@@ -86,47 +81,5 @@ export default class InlineEncrypterPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
-	}
-}
-
-class SampleModal extends Modal {
-	constructor(app: App) {
-		super(app);
-	}
-
-	onOpen() {
-		const {contentEl} = this;
-		contentEl.setText('Woah!');
-	}
-
-	onClose() {
-		const {contentEl} = this;
-		contentEl.empty();
-	}
-}
-
-class InlineEncrypterSettingTab extends PluginSettingTab {
-	plugin: InlineEncrypterPlugin;
-
-	constructor(app: App, plugin: InlineEncrypterPlugin) {
-		super(app, plugin);
-		this.plugin = plugin;
-	}
-
-	display(): void {
-		const {containerEl} = this;
-
-		containerEl.empty();
-
-		new Setting(containerEl)
-			.setName('Setting #1')
-			.setDesc('It\'s a secret')
-			.addText(text => text
-				.setPlaceholder('Enter your secret')
-				.setValue(this.plugin.settings.ieSetting)
-				.onChange(async (value) => {
-					this.plugin.settings.ieSetting = value;
-					await this.plugin.saveSettings();
-				}));
 	}
 }
