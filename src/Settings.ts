@@ -1,5 +1,5 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
-import InlineEncrypterPlugin from './main';
+import InlineEncrypterPlugin from 'main';
 
 export interface InlineEncrypterSettings {
 	ieSetting: string;
