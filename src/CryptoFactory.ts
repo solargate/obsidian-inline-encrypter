@@ -97,7 +97,6 @@ export class CryptoFactory {
 
 			const key = await this.deriveKey(password, salt);
 
-			// decrypt into bytes
 			const decryptedBytes = await crypto.subtle.decrypt(
 				{
 					name: 'AES-GCM',
@@ -106,7 +105,6 @@ export class CryptoFactory {
 				key,
 				encryptedTextBytes
 			);
-			// convert bytes to text
 			const utf8Decoder	= new TextDecoder();
 			const decryptedText = utf8Decoder.decode(decryptedBytes);
 			return decryptedText;
