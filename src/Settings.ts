@@ -22,15 +22,20 @@ export class InlineEncrypterSettingTab extends PluginSettingTab {
 
 		containerEl.empty();
 
-		new Setting(containerEl)
-			.setName('Setting #1')
-			.setDesc('It\'s a secret')
-			.addText(text => text
-				.setPlaceholder('Enter your secret')
-				.setValue(this.plugin.settings.ieSetting)
-				.onChange(async (value) => {
-					this.plugin.settings.ieSetting = value;
-					await this.plugin.saveSettings();
-				}));
+		containerEl.empty();
+		
+		containerEl.createEl('h1', {text: 'Inline Encrypter settings'});
+		containerEl.createEl('p', {text: 'Settings will be here later...'})
+
+		//new Setting(containerEl)
+		//	.setName('Setting #1')
+		//	.setDesc('It\'s a secret')
+		//	.addText(text => text
+		//		.setPlaceholder('Enter your secret')
+		//		.setValue(this.plugin.settings.ieSetting)
+		//		.onChange(async (value) => {
+		//			this.plugin.settings.ieSetting = value;
+		//			await this.plugin.saveSettings();
+		//		}));
 	}
 }
