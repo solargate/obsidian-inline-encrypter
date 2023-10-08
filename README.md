@@ -24,7 +24,7 @@ Reading mode:
 
 1. In edit mode select text you want to encrypt.
 
-2. Run "Encrypt selected text" from command palette.
+2. Run **Encrypt selected text** from command palette.
 
 ![Commands](docs/images/screen_03_command.png)
 
@@ -42,7 +42,7 @@ Reading mode:
 
 ![Selecting secret](docs/images/screen_05_secret_select.png)
 
-4. Run "Decrypt selected text" from command palette.
+4. Run **Decrypt selected text** from command palette.
 
 5. Enter the password for decryption.
 

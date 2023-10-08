@@ -1,6 +1,6 @@
 {
 	"name": "inline-encrypter",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"description": "A simple plugin for inline encrypting in Obsidian notes",
 	"main": "main.js",
 	"scripts": {
