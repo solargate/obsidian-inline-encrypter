@@ -1,72 +1,51 @@
-# Obsidian Sample Plugin
+# Obsidian Inline Encrypter Plugin
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+## Overview
 
-This project uses Typescript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in Typescript Definition format, which contains TSDoc comments describing what it does.
+Encrypt your secrets in the [Obsidian.md](https://obsidian.md/) notes.
 
-**Note:** The Obsidian API is still in early alpha and is subject to change at any time!
+This is a simple plugin for encrypting the text in Obsidian notes just inline. It was inspired by [Obsidian Encrypt Plugin](https://github.com/meld-cp/obsidian-encrypt).
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open Sample Modal" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+> ⚠️ WARNING: Use at your own risk. Your passwords are never stored anywher. If you forget your passwords you can't decrypt your notes. Do not give access to your files to a third party to avoid possible decryption of data.
 
-## First time developing plugins?
+You can encrypt all the text in a note, as well as parts of it, such as the contents of lists, tables, etc. The encrypted value is saved directly in the note as a block of code and appears as a button in reading mode:
 
-Quick starting guide for new plugin devs:
+Edit mode:
 
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+![Editing mode](docs/images/screen_01_edit.png)
 
-## Releasing new releases
+Reading mode:
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
+![Reading mode](docs/images/screen_02_read.png)
 
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
+## Usage
 
-## Adding your plugin to the community plugin list
+### Encryption
 
-- Check https://github.com/obsidianmd/obsidian-releases/blob/master/plugin-review.md
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
+1. In edit mode select text you want to encrypt.
 
-## How to use
+2. Run "Encrypt selected text" from command palette.
 
-- Clone this repo.
-- Make sure your NodeJS is at least v16 (`node --version`).
-- `npm i` or `yarn` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
+![Commands](docs/images/screen_03_command.png)
 
-## Manually installing the plugin
+3. Enter the password for encryption.
 
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
+### Decryption
 
-## Improve code quality with eslint (optional)
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- To use eslint with this project, make sure to install eslint from terminal:
-  - `npm install -g eslint`
-- To use eslint to analyze this project use this command:
-  - `eslint main.ts`
-  - eslint will then create a report with suggestions for code improvement by file and line number.
-- If your source code is in a folder, such as `src`, you can use eslint with this command to analyze all files in that folder:
-  - `eslint .\src\`
+1. To see the decrypted value without decrypting it in the text of the note, simply click on the button in reading mode.
 
-## API Documentation
+![Button](docs/images/screen_04_button.png)
 
-See https://github.com/obsidianmd/obsidian-api
+2. Enter the password for decryption.
+
+3. To decrypt a secret in the text of a note, select the entire code block in edit mode.
+
+![Selecting secret](docs/images/screen_05_secret_select.png)
+
+4. Run "Decrypt selected text" from command palette.
+
+5. Enter the password for decryption.
+
+## Technical Notes
+
+Encryption algorhytm is ```aes-256-gcm```. Salt and IV are unique and random.
