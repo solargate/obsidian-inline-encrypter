@@ -18,14 +18,14 @@ export default class InlineEncrypterPlugin extends Plugin {
 		this.registerMarkdownPostProcessor((el,ctx) => this.processEncryptedCodeBlockProcessor(el, ctx));
 
 		this.addCommand({
-			id: 'inline-encrypter-encrypt-command',
+			id: 'encrypt-command',
 			name: 'Encrypt selected text',
 			icon: 'lock',
 			editorCallback: (editor: Editor, view: MarkdownView) => this.processInlineEncryptCommand(editor)
 		});
 
 		this.addCommand({
-			id: 'inline-encrypter-decrypt-command',
+			id: 'decrypt-command',
 			name: 'Decrypt selected text',
 			icon: 'lock',
 			editorCallback: (editor: Editor, view: MarkdownView) => this.processInlineDecryptCommand(editor)

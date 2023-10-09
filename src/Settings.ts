@@ -21,10 +21,7 @@ export class InlineEncrypterSettingTab extends PluginSettingTab {
 		const {containerEl} = this;
 
 		containerEl.empty();
-
-		containerEl.empty();
 		
-		containerEl.createEl('h1', {text: 'Inline Encrypter settings'});
 		containerEl.createEl('p', {text: 'Settings will be here later...'})
 
 		//new Setting(containerEl)

@@ -1,11 +1,10 @@
 {
 	"id": "inline-encrypter",
 	"name": "Inline Encrypter",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"minAppVersion": "1.1.1",
 	"description": "A simple plugin for inline encrypting in Obsidian notes.",
 	"author": "Alexander Cheryomukhin",
-	"authorUrl": "",
-	"fundingUrl": "",
+	"authorUrl": "https://github.com/solargate",
 	"isDesktopOnly": false
 }
