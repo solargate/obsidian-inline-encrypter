@@ -1,20 +1,14 @@
 import { Editor, MarkdownView, Notice, Plugin, MarkdownPostProcessorContext } from 'obsidian';
 
-import { InlineEncrypterSettings, DEFAULT_SETTINGS, InlineEncrypterSettingTab } from 'Settings';
 import { ModalPassword } from 'ModalPassword';
 import { ModalDecrypt } from 'ModalDecrypt';
 import { CryptoFactory } from 'CryptoFactory';
 import { ENCRYPTED_CODE_PREFIX } from 'Constants'
 
 export default class InlineEncrypterPlugin extends Plugin {
-	settings: InlineEncrypterSettings;
 	cryptoFactory = new CryptoFactory(16, 16, 262144);
 
 	async onload() {
-		await this.loadSettings();
-
-		this.addSettingTab(new InlineEncrypterSettingTab(this.app, this));
-
 		this.registerMarkdownPostProcessor((el,ctx) => this.processEncryptedCodeBlockProcessor(el, ctx));
 
 		this.addCommand({
@@ -36,14 +30,6 @@ export default class InlineEncrypterPlugin extends Plugin {
 
 	onunload() {
 		console.log('Inline Encrypter plugin unloaded')
-	}
-
-	async loadSettings() {
-		//this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
-	}
-
-	async saveSettings() {
-		//await this.saveData(this.settings);
 	}
 
     private async processInlineEncryptCommand(editor: Editor) {
