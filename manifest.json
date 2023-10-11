@@ -1,7 +1,7 @@
 {
 	"id": "inline-encrypter",
 	"name": "Inline Encrypter",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"minAppVersion": "1.1.1",
 	"description": "A simple plugin for inline encrypting in Obsidian notes.",
 	"author": "Alexander Cheryomukhin",
