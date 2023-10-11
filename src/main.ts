@@ -56,7 +56,7 @@ export default class InlineEncrypterPlugin extends Plugin {
 					return;
 				}			
 				const output = await this.cryptoFactory.encryptToBase64(input, passModal.password);
-				editor.replaceSelection('```' + ENCRYPTED_CODE_PREFIX + output + '```');
+				editor.replaceSelection('`' + ENCRYPTED_CODE_PREFIX + output + '`');
 				new Notice('✅ Text encrypted')
 			}
 			passModal.open();
@@ -73,7 +73,7 @@ export default class InlineEncrypterPlugin extends Plugin {
 				if (!passModal.isPassword) {
 					return;
 				}			
-				input = input.replace('```', '').replace(ENCRYPTED_CODE_PREFIX, '').replace('```', '');
+				input = input.replace('`', '').replace(ENCRYPTED_CODE_PREFIX, '').replace('`', '');
 				const output = await this.cryptoFactory.decryptFromBase64(input, passModal.password);
 				if (output === null) {
 					new Notice('❌ Decryption failed!');

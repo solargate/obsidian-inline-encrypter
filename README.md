@@ -8,7 +8,7 @@ This is a simple plugin for encrypting the text in Obsidian notes just inline. I
 
 > ⚠️ WARNING: Use at your own risk. Your passwords are never stored anywher. If you forget your passwords you can't decrypt your notes. Do not give access to your files to a third party to avoid possible decryption of data.
 
-You can encrypt all the text in a note, as well as parts of it, such as the contents of lists, tables, etc. The encrypted value is saved directly in the note as a block of code and appears as a button in reading mode:
+You can encrypt all the text in a note, as well as parts of it, such as the contents of lists, tables, etc. The encrypted value is saved directly in the note as a block of code and appears as a button in reading mode.
 
 Edit mode:
 
@@ -48,4 +48,4 @@ Reading mode:
 
 ## Technical Notes
 
-Encryption algorhytm is ```aes-256-gcm```. Salt and IV are unique and random.
+Encryption algorhytm is `aes-256-gcm`. Salt and IV are unique and random.
