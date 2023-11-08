@@ -40,10 +40,13 @@ export default class InlineEncrypterPlugin extends Plugin {
 			passModal.onClose = async () => {
 				if (!passModal.isPassword) {
 					return;
-				}			
+				}
 				const output = await this.cryptoFactory.encryptToBase64(input, passModal.password);
 				editor.replaceSelection('`' + ENCRYPTED_CODE_PREFIX + output + '`');
-				new Notice('✅ Text encrypted')
+				if (passModal.password.length === 0) {
+					new Notice('⚠️ Password is empty');
+				}
+				new Notice('✅ Text encrypted');				
 			}
 			passModal.open();
         } else {

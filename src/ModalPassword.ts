@@ -6,6 +6,7 @@ export class ModalPassword extends Modal {
 
 	constructor(app: App) {
 		super(app);
+		this.password = '';
 	}
 
 	onOpen() {
@@ -15,13 +16,17 @@ export class ModalPassword extends Modal {
 
 		new Setting(contentEl).setName("Password").addText((text) => {
 			text.inputEl.type = 'password';
+			text.inputEl.addEventListener("keypress", (event) => {
+				if (event.key === 'Enter') {
+					this.passwordOk();
+				}
+			});
 			text.onChange((value) => this.password = value);
 		});
   
 		new Setting(contentEl).addButton((btn) => 
 			btn.setButtonText("OK").setCta().onClick(() => {
-				this.isPassword = true;
-				this.close();
+				this.passwordOk();
 			}));
 	}
 
@@ -29,4 +34,9 @@ export class ModalPassword extends Modal {
 		const {contentEl} = this;
 		contentEl.empty();
 	}
+
+	passwordOk() {
+		this.isPassword = true;
+		this.close();	
+	}	
 }
