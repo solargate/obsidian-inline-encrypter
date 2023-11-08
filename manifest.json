@@ -1,7 +1,7 @@
 {
 	"id": "inline-encrypter",
 	"name": "Inline Encrypter",
-	"version": "1.0.4",
+	"version": "1.0.5",
 	"minAppVersion": "1.1.1",
 	"description": "Encrypt secrets in your notes.",
 	"author": "Alexander Cheryomukhin",
