@@ -4,10 +4,10 @@ export class CryptoFactory {
 	private saltSize: number;
 	private iterations: number;
 
-	constructor(vectorSize: number, saltSize: number, iterations: number) {
-		this.vectorSize = vectorSize;
-		this.saltSize = saltSize;
-		this.iterations = iterations;
+	constructor() {
+		this.vectorSize = 16;
+		this.saltSize = 16;
+		this.iterations = 262144;
 	}
 
 	private convertArrayToString(bytes: Uint8Array): string {

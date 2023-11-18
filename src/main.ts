@@ -1,15 +1,17 @@
 import { Editor, MarkdownView, Notice, Plugin, MarkdownPostProcessorContext } from 'obsidian';
 
 import { ModalPassword } from 'ModalPassword';
-import { ModalDecrypt } from 'ModalDecrypt';
 import { CryptoFactory } from 'CryptoFactory';
-import { ENCRYPTED_CODE_PREFIX } from 'Constants'
+import { UiHelper } from 'UiHelper';
+import { livePreviewExtension } from 'LivePreviewExtension';
+import { ENCRYPTED_CODE_PREFIX } from 'Constants';
 
 export default class InlineEncrypterPlugin extends Plugin {
-	cryptoFactory = new CryptoFactory(16, 16, 262144);
+	cryptoFactory = new CryptoFactory();
 
 	async onload() {
 		this.registerMarkdownPostProcessor((el,ctx) => this.processEncryptedCodeBlockProcessor(el, ctx));
+		this.registerEditorExtension(livePreviewExtension(this.app));
 
 		this.addCommand({
 			id: 'encrypt',
@@ -85,33 +87,14 @@ export default class InlineEncrypterPlugin extends Plugin {
 			const codeblock = codeblocks.item(i);
 			const text = codeblock.innerText.trim();
 			const isEncrypted = text.indexOf(ENCRYPTED_CODE_PREFIX) === 0;
-  
+
 			if (isEncrypted) {
+				const uiHelper = new UiHelper();
 				codeblock.innerText = ''
 				codeblock.createEl('a', {cls: 'inline-encrypter-code'});
-				codeblock.onClickEvent((event: MouseEvent) => this.handleDecryptClick(event, text));
-		  	}
-		}
-	}
-
-	private handleDecryptClick(event: MouseEvent, input: string) {
-		event.preventDefault();
-
-		const passModal = new ModalPassword(this.app);
-		passModal.onClose = async () => {
-			if (!passModal.isPassword) {
-				return;
-			}			
-			input = input.replace(ENCRYPTED_CODE_PREFIX, '');
-			const output = await this.cryptoFactory.decryptFromBase64(input, passModal.password);
-			if (output === null) {
-				new Notice('❌ Decryption failed!');
-				return;
-			} else {
-				new ModalDecrypt(this.app, output).open();
+				codeblock.onClickEvent((event: MouseEvent) => uiHelper.handleDecryptClick(this.app, event, text));
 			}
 		}
-		passModal.open();
 	}
 
 }
