@@ -18,6 +18,8 @@ Reading mode:
 
 ![Reading mode](docs/images/screen_02_read.png)
 
+Live Preview mode is also supported.
+
 ## Usage
 
 ### Encryption
@@ -30,6 +32,8 @@ Reading mode:
 
 3. Enter the password for encryption.
 
+4. You can also run **Encrypt selected text as code block** command for encrypting into common code block.
+
 ### Decryption
 
 1. To see the decrypted value without decrypting it in the text of the note, simply click on the button in reading mode.
@@ -40,7 +44,9 @@ Reading mode:
 
 3. To decrypt a secret in the text of a note, select the entire code block in edit mode.
 
-![Selecting secret](docs/images/screen_05_secret_select.png)
+![Selecting secret in inline code block](docs/images/screen_05_secret_select.png)
+
+![Selecting secret in common code block](docs/images/screen_06_secret_select_block.png)
 
 4. Run **Decrypt selected text** from command palette.
 
