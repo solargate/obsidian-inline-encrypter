@@ -53,16 +53,6 @@ export const livePreviewExtension = (app: App) => ViewPlugin.fromClass(class imp
                                     })
                                 );
                             }
-                            //else {
-                            //    builder.add(
-                            //        node.from,
-                            //        node.from,
-                            //        Decoration.replace({
-                            //            widget: new InlineWidget(app, value),
-                            //            inclusive: false
-                            //        }),
-                            //    );
-                            //}
                         }
                     }
                 },
@@ -75,9 +65,3 @@ export const livePreviewExtension = (app: App) => ViewPlugin.fromClass(class imp
     decorations: instance => instance.decorations,
 }
 );
-
-//const pluginSpec: PluginSpec<LivePreviewExtension> = {
-//    decorations: (value: LivePreviewExtension) => value.decorations,
-//};
-
-//export const livePreviewExtension = (app: App) => ViewPlugin.fromClass(LivePreviewExtension, pluginSpec);

@@ -15,8 +15,8 @@ export class UiHelper {
 		passModal.onClose = async () => {
 			if (!passModal.isPassword) {
 				return;
-			}			
-			input = input.replace(ENCRYPTED_CODE_PREFIX, '');
+			}
+			input = input.replace(ENCRYPTED_CODE_PREFIX, '').replace(/`/g, '').replace(/\s/g, '').replace(/\r?\n|\r/g, '');
 			const output = await cryptoFactory.decryptFromBase64(input, passModal.password);
 			if (output === null) {
 				new Notice('❌ Decryption failed!');

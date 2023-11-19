@@ -13,6 +13,11 @@
     cursor: pointer;
 }
 
+.inline-encrypter-lp-code {
+    display: inline-block;
+    vertical-align: middle;
+}
+
 .inline-encrypter-decrypt-modal textarea {
 	width: 100%;
 	min-height: 3em;
