@@ -23,7 +23,16 @@ export class ModalPassword extends Modal {
 			});
 			text.onChange((value) => this.password = value);
 		});
-  
+
+		new Setting(contentEl).setName("Show password").addToggle((toggle) =>
+			toggle.setValue(false).onChange((value) => {
+				const input = this.contentEl.querySelector("input");
+				if (input) {
+					input.type = value ? 'text' : 'password';
+				}
+			})
+		);
+		
 		new Setting(contentEl).addButton((btn) => 
 			btn.setButtonText("OK").setCta().onClick(() => {
 				this.passwordOk();
