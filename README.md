@@ -34,6 +34,10 @@ Live Preview mode is also supported.
 
 4. You can also run **Encrypt selected text as code block** command for encrypting into common code block.
 
+5. There is possibility to insert pre-encrypted text. Run **Insert pre-encrypted text**.
+
+![Insert pre-encrypted text](docs/images/screen_07_insert_pre_encrypted_text.png)
+
 ### Decryption
 
 1. To see the decrypted value without decrypting it in the text of the note, simply click on the button in reading mode.
