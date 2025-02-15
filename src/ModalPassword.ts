@@ -1,18 +1,30 @@
-import { App, Modal, Setting } from 'obsidian';
+import { App, Modal, Setting, TextAreaComponent } from 'obsidian';
+
+import { EncryptedTextType } from 'Constants';
 
 export class ModalPassword extends Modal {
 	password: string;
+	input: string;
 	isPassword: boolean;
+	textType: EncryptedTextType;
 
-	constructor(app: App) {
+	constructor(app: App, textType: EncryptedTextType) {
 		super(app);
 		this.password = '';
+		this.input = '';
+		this.textType = textType;
 	}
 
 	onOpen() {
 		const {contentEl} = this;
+		let textArea: TextAreaComponent;
 
-		contentEl.createEl("h1", {text: "Enter password"});
+		if (this.textType === EncryptedTextType.PreEncrypted) {
+			contentEl.createEl("h1", {text: "Enter password and text for encryption"});
+		}
+		else {
+			contentEl.createEl("h1", {text: "Enter password"});
+		}
 
 		new Setting(contentEl).setName("Password").addText((text) => {
 			text.inputEl.type = 'password';
@@ -32,9 +44,23 @@ export class ModalPassword extends Modal {
 				}
 			})
 		);
-		
+
+		if (this.textType === EncryptedTextType.PreEncrypted) {
+			contentEl.classList.add('inline-encrypter-encrypt-text-modal');
+			new Setting(contentEl).setName("Text to encrypt").addTextArea(cb => {
+				textArea = cb;
+				cb.setValue(this.input);
+				cb.inputEl.readOnly = false;
+				cb.inputEl.cols = 30
+				cb.inputEl.rows = 8;
+			})
+		}
+
 		new Setting(contentEl).addButton((btn) => 
 			btn.setButtonText("OK").setCta().onClick(() => {
+				if (this.textType === EncryptedTextType.PreEncrypted) {
+					this.input = textArea.getValue();
+				}
 				this.passwordOk();
 			}));
 	}

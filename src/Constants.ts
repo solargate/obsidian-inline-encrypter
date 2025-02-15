@@ -4,3 +4,8 @@ export enum CodeBlockType {
 	Inline,
 	Common
 }
+
+export enum EncryptedTextType {
+	Inline,
+	PreEncrypted
+}

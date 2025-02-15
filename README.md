@@ -18,7 +18,7 @@ Reading mode:
 
 ![Reading mode](docs/images/screen_02_read.png)
 
-Live Preview mode is also supported.
+Live Preview mode is also supported. Buttons for secrets decryption are clickable in Live Preview mode.
 
 ## Usage
 
@@ -33,6 +33,10 @@ Live Preview mode is also supported.
 3. Enter the password for encryption.
 
 4. You can also run **Encrypt selected text as code block** command for encrypting into common code block.
+
+5. There is possibility to insert pre-encrypted text. Run **Insert pre-encrypted text**.
+
+![Insert pre-encrypted text](docs/images/screen_07_insert_pre_encrypted_text.png)
 
 ### Decryption
 

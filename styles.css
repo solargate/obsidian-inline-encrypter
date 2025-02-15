@@ -21,5 +21,9 @@
 .inline-encrypter-decrypt-modal textarea {
 	width: 100%;
 	min-height: 3em;
-	resize: both;
+	resize: none;
+}
+
+.inline-encrypter-encrypt-text-modal textarea {
+	resize: none;
 }

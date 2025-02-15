@@ -22,6 +22,7 @@ export class ModalDecrypt extends Modal {
             cb.setValue(this.text);
             cb.inputEl.setSelectionRange(0,0)
             cb.inputEl.readOnly = true;
+			cb.inputEl.cols = 50
             cb.inputEl.rows = 10;
 		})
         textVal.settingEl.querySelector('.setting-item-info')?.remove();
