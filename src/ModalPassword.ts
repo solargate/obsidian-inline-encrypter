@@ -52,7 +52,7 @@ export class ModalPassword extends Modal {
 				cb.setValue(this.input);
 				cb.inputEl.readOnly = false;
 				cb.inputEl.cols = 30
-				cb.inputEl.rows = 10;
+				cb.inputEl.rows = 8;
 			})
 		}
 
