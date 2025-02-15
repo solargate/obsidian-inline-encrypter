@@ -4,14 +4,14 @@ import { EditorSelection } from '@codemirror/state';
 import { ModalPassword } from 'ModalPassword';
 import { ModalDecrypt } from 'ModalDecrypt';
 import { CryptoFactory } from 'CryptoFactory';
-import { ENCRYPTED_CODE_PREFIX } from 'Constants';
+import { ENCRYPTED_CODE_PREFIX, EncryptedTextType } from 'Constants';
 
 export class UiHelper {
 
 	public handleDecryptClick(app: App, event: MouseEvent, input: string) {
 		event.preventDefault();
 		const cryptoFactory = new CryptoFactory();
-		const passModal = new ModalPassword(app);
+		const passModal = new ModalPassword(app, EncryptedTextType.Inline);
 		passModal.onClose = async () => {
 			if (!passModal.isPassword) {
 				return;
