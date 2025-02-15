@@ -23,3 +23,7 @@
 	min-height: 3em;
 	resize: both;
 }
+
+.inline-encrypter-encrypt-text-modal textarea {
+	resize: none;
+}
