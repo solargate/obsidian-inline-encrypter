@@ -18,7 +18,7 @@ Reading mode:
 
 ![Reading mode](docs/images/screen_02_read.png)
 
-Live Preview mode is also supported.
+Live Preview mode is also supported. Buttons for secrets decryption are clickable in Live Preview mode.
 
 ## Usage
 
