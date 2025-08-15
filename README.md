@@ -59,3 +59,7 @@ Live Preview mode is also supported. Buttons for secrets decryption are clickabl
 ## Technical Notes
 
 Encryption algorhytm is `aes-256-gcm`. Salt and IV are unique and random.
+
+## Donations
+
+You can make any donations [here](DONATIONS.md).
