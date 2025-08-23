@@ -4,11 +4,12 @@ import type { PluginValue } from '@codemirror/view';
 import { RangeSetBuilder } from '@codemirror/state';
 import { syntaxTree } from '@codemirror/language';
 
+import InlineEncrypterPlugin from 'main';
 import { InlineWidget } from 'InlineWidget';
 import { UiHelper } from "UiHelper";
 import { ENCRYPTED_CODE_PREFIX } from 'Constants';
 
-export const livePreviewExtension = (app: App) => ViewPlugin.fromClass(class implements PluginValue {
+export const livePreviewExtension = (app: App, plugin: InlineEncrypterPlugin) => ViewPlugin.fromClass(class implements PluginValue {
     decorations: DecorationSet;
 
     constructor(view: EditorView) {
@@ -49,7 +50,7 @@ export const livePreviewExtension = (app: App) => ViewPlugin.fromClass(class imp
                                     node.from,
                                     node.to,
                                     Decoration.replace({
-                                        widget: new InlineWidget(app, value)
+                                        widget: new InlineWidget(app, plugin, value)
                                     })
                                 );
                             }

@@ -2,10 +2,12 @@ import { App, Modal, Setting, TextAreaComponent, Notice } from 'obsidian';
 
 export class ModalDecrypt extends Modal {
     text: string;
+	autoCopy: boolean;
 
-	constructor(app: App, text = '') {
+	constructor(app: App, text = '', autoCopy: boolean) {
 		super(app);
         this.text = text;
+		this.autoCopy = autoCopy;
 	}
 
 	onOpen() {
@@ -24,6 +26,10 @@ export class ModalDecrypt extends Modal {
             cb.inputEl.readOnly = true;
 			cb.inputEl.cols = 50
             cb.inputEl.rows = 10;
+			if (this.autoCopy == true) {
+				navigator.clipboard.writeText( textArea.getValue());
+				new Notice('Secret copied');
+			}
 		})
         textVal.settingEl.querySelector('.setting-item-info')?.remove();
 
