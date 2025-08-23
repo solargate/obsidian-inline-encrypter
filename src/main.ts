@@ -1,5 +1,6 @@
 import { Editor, MarkdownView, Notice, Plugin, MarkdownPostProcessorContext } from 'obsidian';
 
+import { InlineEncrypterPluginSettings, InlineEncrypterSettingTab, DEFAULT_SETTINGS} from 'Settings';
 import { ModalPassword } from 'ModalPassword';
 import { CryptoFactory } from 'CryptoFactory';
 import { UiHelper } from 'UiHelper';
@@ -7,12 +8,16 @@ import { livePreviewExtension } from 'LivePreviewExtension';
 import { ENCRYPTED_CODE_PREFIX, CodeBlockType, EncryptedTextType } from 'Constants';
 
 export default class InlineEncrypterPlugin extends Plugin {
+	settings: InlineEncrypterPluginSettings;
 	cryptoFactory = new CryptoFactory();
 
 	async onload() {
+		await this.loadSettings();
+		this.addSettingTab(new InlineEncrypterSettingTab(this.app, this));
+
 		this.registerMarkdownPostProcessor((el,ctx) => this.processEncryptedInlineCodeBlockProcessor(el, ctx));
 		this.registerMarkdownCodeBlockProcessor(ENCRYPTED_CODE_PREFIX, (source, el,ctx) => this.processEncryptedCodeBlockProcessor(source, el, ctx));
-		this.registerEditorExtension(livePreviewExtension(this.app));
+		this.registerEditorExtension(livePreviewExtension(this.app, this));
 
 		this.addCommand({
 			id: 'encrypt',
@@ -47,6 +52,14 @@ export default class InlineEncrypterPlugin extends Plugin {
 
 	onunload() {
 		console.log('Inline Encrypter plugin unloaded')
+	}
+
+	async loadSettings() {
+		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+	}
+
+	async saveSettings() {
+		await this.saveData(this.settings);
 	}
 
     private async processInlineEncryptCommand(editor: Editor, codeBlockType: CodeBlockType, textType: EncryptedTextType) {
@@ -137,7 +150,7 @@ export default class InlineEncrypterPlugin extends Plugin {
 				const uiHelper = new UiHelper();
 				codeblock.innerText = ''
 				codeblock.createEl('a', {cls: 'inline-encrypter-code'});
-				codeblock.onClickEvent((event: MouseEvent) => uiHelper.handleDecryptClick(this.app, event, text));
+				codeblock.onClickEvent((event: MouseEvent) => uiHelper.handleDecryptClick(this.app, this, event, text));
 			}
 		}
 	}
@@ -145,7 +158,7 @@ export default class InlineEncrypterPlugin extends Plugin {
 	private processEncryptedCodeBlockProcessor(source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) {
 		const uiHelper = new UiHelper();
 		const codeblock = el.createEl('a', {cls: 'inline-encrypter-code'});
-		codeblock.onClickEvent((event: MouseEvent) => uiHelper.handleDecryptClick(this.app, event, source));
+		codeblock.onClickEvent((event: MouseEvent) => uiHelper.handleDecryptClick(this.app, this, event, source));
 	}
 
 }
