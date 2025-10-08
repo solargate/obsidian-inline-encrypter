@@ -6,6 +6,7 @@ import { CryptoFactory } from 'CryptoFactory';
 import { UiHelper } from 'UiHelper';
 import { livePreviewExtension } from 'LivePreviewExtension';
 import { ENCRYPTED_CODE_PREFIX, CodeBlockType, EncryptedTextType } from 'Constants';
+import { saveStatePasswordGlobal, saveStatePasswordRemember } from 'Globals';
 
 export default class InlineEncrypterPlugin extends Plugin {
 	settings: InlineEncrypterPluginSettings;
@@ -14,6 +15,7 @@ export default class InlineEncrypterPlugin extends Plugin {
 	async onload() {
 		await this.loadSettings();
 		this.addSettingTab(new InlineEncrypterSettingTab(this.app, this));
+		saveStatePasswordRemember(this.settings.rememberPassword);
 
 		this.registerMarkdownPostProcessor((el,ctx) => this.processEncryptedInlineCodeBlockProcessor(el, ctx));
 		this.registerMarkdownCodeBlockProcessor(ENCRYPTED_CODE_PREFIX, (source, el,ctx) => this.processEncryptedCodeBlockProcessor(source, el, ctx));
@@ -128,6 +130,7 @@ export default class InlineEncrypterPlugin extends Plugin {
 				const output = await this.cryptoFactory.decryptFromBase64(input, passModal.password);
 				if (output === null) {
 					new Notice('❌ Decryption failed!');
+					saveStatePasswordGlobal('');
 					return;
 				} else {
 					editor.replaceSelection(output);

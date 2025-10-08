@@ -1,13 +1,16 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
 
 import InlineEncrypterPlugin from 'main';
+import { saveStatePasswordGlobal, saveStatePasswordRemember } from 'Globals';
 
 export interface InlineEncrypterPluginSettings {
     autoCopy: boolean;
+	rememberPassword: boolean;
 }
 
 export const DEFAULT_SETTINGS: InlineEncrypterPluginSettings = {
     autoCopy: false,
+	rememberPassword: false,
 }
 
 export class InlineEncrypterSettingTab extends PluginSettingTab {
@@ -34,5 +37,22 @@ export class InlineEncrypterSettingTab extends PluginSettingTab {
                     this.display();
                 })
             );
+
+		new Setting(containerEl)
+			.setName('Remember password until session restarts')
+			.setDesc('Remember correct password until Obsidian session restarts')
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settings.rememberPassword)
+                .onChange(async (value) => {
+                    this.plugin.settings.rememberPassword = value;
+                    if (value === false) {
+                        saveStatePasswordGlobal('');
+                    }
+                    saveStatePasswordRemember(value);
+                    await this.plugin.saveSettings();
+                    this.display();
+                })
+            );
+
 	}
 }

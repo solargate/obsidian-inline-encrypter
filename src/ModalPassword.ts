@@ -1,6 +1,7 @@
 import { App, Modal, Setting, TextAreaComponent } from 'obsidian';
 
 import { EncryptedTextType } from 'Constants';
+import { State, saveStatePasswordGlobal } from 'Globals';
 
 export class ModalPassword extends Modal {
 	password: string;
@@ -10,12 +11,16 @@ export class ModalPassword extends Modal {
 
 	constructor(app: App, textType: EncryptedTextType) {
 		super(app);
-		this.password = '';
+		this.password = State.passwordGlobal;
 		this.input = '';
 		this.textType = textType;
 	}
 
 	onOpen() {
+		if (State.passwordGlobal.length > 0 && State.passwordRemember && this.textType != EncryptedTextType.PreEncrypted) {
+			this.passwordOk();
+		}
+
 		const {contentEl} = this;
 		let textArea: TextAreaComponent;
 
@@ -28,6 +33,9 @@ export class ModalPassword extends Modal {
 
 		new Setting(contentEl).setName("Password").addText((text) => {
 			text.inputEl.type = 'password';
+			if (State.passwordGlobal.length > 0 && State.passwordRemember) {
+				text.inputEl.value = State.passwordGlobal;
+			}
 			text.inputEl.addEventListener("keypress", (event) => {
 				if (event.key === 'Enter') {
 					this.passwordOk();
@@ -72,6 +80,9 @@ export class ModalPassword extends Modal {
 
 	passwordOk() {
 		this.isPassword = true;
+		if (State.passwordRemember) {
+			saveStatePasswordGlobal(this.password);
+		}
 		this.close();	
 	}	
 }

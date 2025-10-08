@@ -6,6 +6,7 @@ import { ModalPassword } from 'ModalPassword';
 import { ModalDecrypt } from 'ModalDecrypt';
 import { CryptoFactory } from 'CryptoFactory';
 import { ENCRYPTED_CODE_PREFIX, EncryptedTextType } from 'Constants';
+import { saveStatePasswordGlobal } from 'Globals';
 
 export class UiHelper {
 
@@ -21,6 +22,7 @@ export class UiHelper {
 			const output = await cryptoFactory.decryptFromBase64(input, passModal.password);
 			if (output === null) {
 				new Notice('❌ Decryption failed!');
+				saveStatePasswordGlobal('');
 				return;
 			} else {
 				new ModalDecrypt(app, output, plugin.settings.autoCopy).open();
