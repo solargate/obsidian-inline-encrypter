@@ -58,10 +58,10 @@ Live Preview mode is also supported. Buttons for secrets decryption are clickabl
 
 ## Security Notes
 
-- Decrypted content is only held in memory.
-- No automatic writing of decrypted content to disk. The only time a decrypted secret is written to disk is when you use the "Decrypt selected text" command.
-- Passwords are never written to disk; they are kept only in memory.
-- Makes encryption with a given passphrase, if you lose your passphrase, you lose your data.
+- Decrypted content is only held in memory
+- No automatic writing of decrypted content to disk; the only time a decrypted secret is written to disk is when you use the "Decrypt selected text" command
+- Passwords are never written to disk; they are kept only in memory
+- Makes encryption with a given passphrase, if you lose your passphrase, you lose your data
 
 ## Technical Notes
 
