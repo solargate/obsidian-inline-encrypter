@@ -69,4 +69,7 @@ Encryption algorhytm is `aes-256-gcm`. Salt and IV are unique and random.
 
 ## Donations
 
-You can make any donations [here](DONATIONS.md).
+You can make any donations:
+
+- [DonationAlerts](https://dalink.to/solargate)
+- [Cryptocurrency](DONATIONS.md)
