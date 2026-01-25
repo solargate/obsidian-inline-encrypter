@@ -24,6 +24,14 @@ export class UiHelper {
 				new Notice('❌ Decryption failed!');
 				saveStatePasswordGlobal('');
 				return;
+			}
+			if (event.ctrlKey) {
+				try {
+					await navigator.clipboard.writeText(output);
+					new Notice('Secret copied');
+				} catch (e) {
+					new Notice('Failed to copy to clipboard');
+				}
 			} else {
 				new ModalDecrypt(app, output, plugin.settings.autoCopy).open();
 			}

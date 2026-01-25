@@ -56,6 +56,8 @@ Live Preview mode is also supported. Buttons for secrets decryption are clickabl
 
 5. Enter the password for decryption.
 
+When the **Ctrl** key is pressed, the secret will not be shown on the screen; it will be copied to the clipboard immediately.
+
 ## Security Notes
 
 - Decrypted content is only held in memory
@@ -69,4 +71,7 @@ Encryption algorhytm is `aes-256-gcm`. Salt and IV are unique and random.
 
 ## Donations
 
-You can make any donations [here](DONATIONS.md).
+You can make any donations:
+
+- [DonationAlerts](https://dalink.to/solargate)
+- [Cryptocurrency](DONATIONS.md)
