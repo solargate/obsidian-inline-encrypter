@@ -56,6 +56,8 @@ Live Preview mode is also supported. Buttons for secrets decryption are clickabl
 
 5. Enter the password for decryption.
 
+When the **Ctrl** key is pressed, the secret will not be shown on the screen; it will be copied to the clipboard immediately.
+
 ## Security Notes
 
 - Decrypted content is only held in memory
