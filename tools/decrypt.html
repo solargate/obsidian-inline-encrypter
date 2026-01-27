@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Inline Encrypter - offline decrypter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root { color-scheme: light dark; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 1rem; line-height: 1.45; }
+    h1 { font-size: 1.25rem; margin: 0 0 1rem; }
+    .row { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; margin-bottom: .75rem; }
+    textarea { width: 100%; min-height: 12rem; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    input[type="password"], input[type="text"] { width: 24rem; max-width: 100%; }
+    button { padding: .5rem .9rem; }
+    .out { white-space: pre-wrap; word-break: break-word; border: 1px solid #7775; border-radius: .5rem; padding: .5rem; margin-top: .5rem; }
+    .muted { opacity: .75; }
+    .small { font-size: .9rem; }
+  </style>
+</head>
+<body>
+  <h1>Inline Encrypter - offline decrypter</h1>
+
+  <div class="row">
+    <label class="small">Password:</label>
+    <input id="password" type="password" placeholder="Enter password for decrypt" />
+    <button id="btn-decrypt-text">Decrypt from text below</button>
+    <button id="btn-copy">Copy result</button>
+  </div>
+
+  <div class="row">
+    <textarea id="input" placeholder="Insert note"></textarea>
+  </div>
+
+  <div class="row">
+    <input id="file-input" type="file" accept=".md,.txt" multiple />
+    <button id="btn-decrypt-files">Decrypt selected files</button>
+  </div>
+
+  <div id="summary" class="small muted"></div>
+
+  <div class="row">
+    <div class="small muted">Result:</div>
+    <div id="output" class="out"></div>
+  </div>
+
+  <script>
+    const ENCRYPTED_CODE_PREFIX = 'secret';
+    const fencedRe = new RegExp(
+      "```" + ENCRYPTED_CODE_PREFIX + "\\s*\\n([\\s\\S]*?)\\n```",
+      "g"
+    );
+
+    const inlineRe = /`secret\s+([^`]+?)`/g;
+
+    const $ = (sel) => document.querySelector(sel);
+    const passwordEl = $('#password');
+    const inputEl = $('#input');
+    const outputEl = $('#output');
+    const summaryEl = $('#summary');
+    const fileInputEl = $('#file-input');
+    const btnDecryptText = $('#btn-decrypt-text');
+    const btnDecryptFiles = $('#btn-decrypt-files');
+    const btnCopy = $('#btn-copy');
+
+    btnDecryptText.addEventListener('click', async () => {
+      const pwd = passwordEl.value || '';
+      const text = inputEl.value || '';
+      if (!pwd) return alert('Enter password');
+      if (!text) return alert('Insert note text');
+      const { result, stats } = await decryptDocument(text, pwd);
+      outputEl.textContent = result;
+      renderSummary(stats);
+    });
+
+    btnDecryptFiles.addEventListener('click', async () => {
+      const pwd = passwordEl.value || '';
+      if (!pwd) return alert('Enter password');
+      const files = Array.from(fileInputEl.files || []);
+      if (!files.length) return alert('Choose files');
+
+      let combined = '';
+      for (const f of files) {
+        const text = await f.text();
+        combined += `\n\n<!-- file: ${f.name} -->\n` + text;
+      }
+      inputEl.value = combined.trim();
+      const { result, stats } = await decryptDocument(combined, pwd);
+      outputEl.textContent = result;
+      renderSummary(stats);
+    });
+
+    btnCopy.addEventListener('click', async () => {
+      const text = outputEl.textContent || '';
+      if (!text) return;
+      await navigator.clipboard.writeText(text);
+      alert('Result copied to clipboard');
+    });
+
+    function renderSummary(stats) {
+      const { totalFenced, totalInline, ok, fail } = stats;
+      summaryEl.innerHTML = `
+        Blocks found: fenced=${totalFenced}, inline=${totalInline}.
+        Success: ${ok}, Errors: ${fail}
+      `;
+    }
+
+    async function decryptDocument(text, password) {
+      const matches = extractMatches(text);
+      let ok = 0, fail = 0;
+
+      matches.sort((a, b) => b.start - a.start);
+
+      let out = text;
+      for (const m of matches) {
+        try {
+          const payload = normalizeEncryptedInput(m.payload);
+          const plain = await decryptImpl(payload, password);
+          out = out.slice(0, m.start) + plain + out.slice(m.end);
+          ok++;
+        } catch (e) {
+          console.error('Decrypt error:', e);
+          fail++;
+        }
+      }
+
+      return {
+        result: out,
+        stats: { totalFenced: countMatches(text, fencedRe), totalInline: countMatches(text, inlineRe), ok, fail }
+      };
+    }
+
+    function extractMatches(text) {
+      const result = [];
+
+      fencedRe.lastIndex = 0;
+      let m;
+      while ((m = fencedRe.exec(text)) !== null) {
+        const payload = (m[1] || '').trim();
+        result.push({
+          type: 'fenced',
+          start: m.index,
+          end: m.index + m[0].length,
+          payload
+        });
+      }
+
+      inlineRe.lastIndex = 0;
+      while ((m = inlineRe.exec(text)) !== null) {
+        const payload = (m[1] || '').trim();
+        result.push({
+          type: 'inline',
+          start: m.index,
+          end: m.index + m[0].length,
+          payload
+        });
+      }
+
+      return result;
+    }
+
+    function countMatches(text, re) {
+      re.lastIndex = 0;
+      let c = 0;
+      while (re.exec(text)) c++;
+      return c;
+    }
+
+    function normalizeEncryptedInput(input) {
+      return (input || '')
+        .replace(/\r/g, '')
+        .replace(/\s+/g, '')
+        .trim();
+    }
+
+    async function decryptImpl(base64Payload, password) {
+      const bytes = base64ToBytes(base64Payload);
+      if (bytes.length < 16 + 16 + 16) {
+        throw new Error('Payload is too short');
+      }
+
+      const IV_SIZE = 16;
+      const SALT_SIZE = 16;
+
+      const iv = bytes.slice(0, IV_SIZE);
+      const salt = bytes.slice(IV_SIZE, IV_SIZE + SALT_SIZE);
+      const ciphertext = bytes.slice(IV_SIZE + SALT_SIZE);
+
+      const key = await deriveAesGcmKey(password, salt, 262144);
+      const plainBuf = await crypto.subtle.decrypt(
+        { name: 'AES-GCM', iv },
+        key,
+        ciphertext
+      );
+      return new TextDecoder().decode(plainBuf);
+    }
+
+    function base64ToBytes(b64) {
+      const bin = atob(b64);
+      const len = bin.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) bytes[i] = bin.charCodeAt(i);
+      return bytes;
+    }
+
+    function strToBytes(str) {
+      return new TextEncoder().encode(str);
+    }
+
+    async function deriveAesGcmKey(password, salt, iterations) {
+      const keyMaterial = await crypto.subtle.importKey(
+        'raw',
+        strToBytes(password),
+        'PBKDF2',
+        false,
+        ['deriveKey']
+      );
+      return crypto.subtle.deriveKey(
+        {
+          name: 'PBKDF2',
+          salt,
+          iterations,
+          hash: 'SHA-512',
+        },
+        keyMaterial,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['encrypt', 'decrypt']
+      );
+    }
+  </script>
+</body>
+</html>
