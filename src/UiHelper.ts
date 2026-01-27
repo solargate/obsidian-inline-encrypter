@@ -36,6 +36,26 @@ export class UiHelper {
 		menu.showAtPosition(pos);
 	}
 
+	public openContextMenuAtEvent(app: App, plugin: InlineEncrypterPlugin, ev: MouseEvent, input: string) {
+		const menu = new Menu();
+
+		menu.addItem(item =>
+			item
+				.setTitle('Decrypt')
+				.setIcon('lock-open')
+				.onClick(() => this.decryptFlow(app, plugin, input, false))
+		);
+
+		menu.addItem(item =>
+			item
+				.setTitle('Decrypt and copy')
+				.setIcon('copy')
+				.onClick(() => this.decryptFlow(app, plugin, input, true))
+		);
+
+		menu.showAtMouseEvent(ev);
+	}	
+
 	private normalizeEncryptedInput(input: string): string {
 		return input
 			.replace(ENCRYPTED_CODE_PREFIX, '')

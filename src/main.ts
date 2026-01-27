@@ -144,97 +144,52 @@ export default class InlineEncrypterPlugin extends Plugin {
     }
 
 	private processEncryptedInlineCodeBlockProcessor(el: HTMLElement, ctx: MarkdownPostProcessorContext) {
-		const codeblocks = el.querySelectorAll('code');
+		const uiHelper = new UiHelper();
 
-		for (let i = 0; i < codeblocks.length; i++) {
-			const codeblock = codeblocks.item(i);
-			const text = codeblock.innerText.trim();
-			const isEncrypted = text.indexOf(ENCRYPTED_CODE_PREFIX) === 0;
+		const codes = el.querySelectorAll('code');
+		if (!codes || codes.length === 0) return;
 
-			if (isEncrypted) {
-				codeblock.innerText = ''
-				codeblock.createEl('a', {cls: 'inline-encrypter-code'});
+		codes.forEach((codeEl) => {
+			const raw = (codeEl.textContent || '').trim();
+			if (!raw || !raw.startsWith(ENCRYPTED_CODE_PREFIX)) return;
 
-				const uiHelper = new UiHelper();
-				const a = el.querySelector('a.inline-encrypter-code') as HTMLAnchorElement | null;
-				if (!a) {
-					return;
-				}
+			codeEl.innerText = '';
+			const btn = codeEl.createEl('a', {cls: 'inline-encrypter-code'});
+			btn.dataset.secret = raw;
 
-				const encryptedValue = text;
-				a.dataset.secret = (encryptedValue || '').trim();
+			btn.addEventListener('click', (ev: MouseEvent) => {
+				if (ev.button !== MouseButton.Left) return;
+				ev.preventDefault();
+				uiHelper.handleDecryptClick(this.app, this, ev, btn.dataset.secret || '');
+			});
 
-				a.addEventListener('click', (event: MouseEvent) => {
-					if (event.button !== MouseButton.Left) return;
-					uiHelper.handleDecryptClick(this.app, this, event, a.dataset.secret || '');
-				});
-
-				a.addEventListener(
-				'mousedown',
-				(event: MouseEvent) => {
-					if (event.button === MouseButton.Right) {
-					event.preventDefault();
-					event.stopPropagation();
-					event.stopImmediatePropagation?.();
-					}
-				},
-				{ capture: true }
-				);
-
-				a.addEventListener('mouseup', (event: MouseEvent) => {
-					if (event.button !== MouseButton.Right) return;
-					event.preventDefault();
-					event.stopPropagation();
-					const pos = { x: event.clientX, y: event.clientY };
-					setTimeout(() => uiHelper.openContextMenuAt(this.app, this, pos, a.dataset.secret || ''), 0);
-				});
-
-				a.addEventListener('contextmenu', (event: MouseEvent) => {
-					event.preventDefault();
-				});
-			}
-		}
+			btn.addEventListener('contextmenu', (ev: MouseEvent) => {
+				ev.preventDefault();
+				ev.stopPropagation();
+				ev.stopImmediatePropagation?.();
+				setTimeout(() => uiHelper.openContextMenuAtEvent(this.app, this, ev, btn.dataset.secret || ''), 0);
+			}, { capture: true });
+		});
 	}
 
 	private processEncryptedCodeBlockProcessor(source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) {
-		el.createEl('a', {cls: 'inline-encrypter-code'});
-
 		const uiHelper = new UiHelper();
-		const a = el.querySelector('a.inline-encrypter-code') as HTMLAnchorElement | null;
-		if (!a) {
-			return;
-		}
 
-		a.dataset.secret = source.trim();
+		const btn = el.createEl('a', {cls: 'inline-encrypter-code'});
+		btn.dataset.secret = (source || '').trim();
 
-		a.addEventListener('click', (event: MouseEvent) => {
-			if (event.button !== MouseButton.Left) return;
-			uiHelper.handleDecryptClick(this.app, this, event, a.dataset.secret || '');
+		btn.addEventListener('click', (ev: MouseEvent) => {
+			if (ev.button !== MouseButton.Left) return;
+			ev.preventDefault();
+			uiHelper.handleDecryptClick(this.app, this, ev, btn.dataset.secret || '');
 		});
 
-		a.addEventListener(
-			'mousedown',
-			(event: MouseEvent) => {
-				if (event.button === MouseButton.Right) {
-					event.preventDefault();
-					event.stopPropagation();
-					event.stopImmediatePropagation?.();
-				}
-			},
-			{ capture: true }
-		);
-
-		a.addEventListener('mouseup', (event: MouseEvent) => {
-			if (event.button !== MouseButton.Right) return;
-			event.preventDefault();
-			event.stopPropagation();
-			const pos = { x: event.clientX, y: event.clientY };
-			setTimeout(() => uiHelper.openContextMenuAt(this.app, this, pos, a.dataset.secret || ''), 0);
-		});
-
-		a.addEventListener('contextmenu', (event: MouseEvent) => {
-			event.preventDefault();
-		});
+		btn.addEventListener('contextmenu', (ev: MouseEvent) => {
+			ev.preventDefault();
+			ev.stopPropagation();
+			ev.stopImmediatePropagation?.();
+			setTimeout(() => uiHelper.openContextMenuAtEvent(this.app, this, ev, btn.dataset.secret || ''), 0);
+		}, { capture: true });
 	}
 
 }
