@@ -58,6 +58,10 @@ Live Preview mode is also supported. Buttons for secrets decryption are clickabl
 
 When the **Ctrl** key is pressed, the secret will not be shown on the screen; it will be copied to the clipboard immediately.
 
+You can also use context menu (right click) to choose decryption method.
+
+![Choosing decryption method from context menu](docs/images/screen_08_context_menu.png)
+
 ## Security Notes
 
 - Decrypted content is only held in memory

@@ -5,7 +5,7 @@ import { ModalPassword } from 'ModalPassword';
 import { CryptoFactory } from 'CryptoFactory';
 import { UiHelper } from 'UiHelper';
 import { livePreviewExtension } from 'LivePreviewExtension';
-import { ENCRYPTED_CODE_PREFIX, CodeBlockType, EncryptedTextType } from 'Constants';
+import { ENCRYPTED_CODE_PREFIX, CodeBlockType, EncryptedTextType, MouseButton } from 'Constants';
 import { saveStatePasswordGlobal, saveStatePasswordRemember } from 'Globals';
 
 export default class InlineEncrypterPlugin extends Plugin {
@@ -145,23 +145,96 @@ export default class InlineEncrypterPlugin extends Plugin {
 
 	private processEncryptedInlineCodeBlockProcessor(el: HTMLElement, ctx: MarkdownPostProcessorContext) {
 		const codeblocks = el.querySelectorAll('code');
+
 		for (let i = 0; i < codeblocks.length; i++) {
 			const codeblock = codeblocks.item(i);
 			const text = codeblock.innerText.trim();
 			const isEncrypted = text.indexOf(ENCRYPTED_CODE_PREFIX) === 0;
+
 			if (isEncrypted) {
-				const uiHelper = new UiHelper();
 				codeblock.innerText = ''
 				codeblock.createEl('a', {cls: 'inline-encrypter-code'});
-				codeblock.onClickEvent((event: MouseEvent) => uiHelper.handleDecryptClick(this.app, this, event, text));
+
+				const uiHelper = new UiHelper();
+				const a = el.querySelector('a.inline-encrypter-code') as HTMLAnchorElement | null;
+				if (!a) {
+					return;
+				}
+
+				const encryptedValue = text;
+				a.dataset.secret = (encryptedValue || '').trim();
+
+				a.addEventListener('click', (event: MouseEvent) => {
+					if (event.button !== MouseButton.Left) return;
+					uiHelper.handleDecryptClick(this.app, this, event, a.dataset.secret || '');
+				});
+
+				a.addEventListener(
+				'mousedown',
+				(event: MouseEvent) => {
+					if (event.button === MouseButton.Right) {
+					event.preventDefault();
+					event.stopPropagation();
+					event.stopImmediatePropagation?.();
+					}
+				},
+				{ capture: true }
+				);
+
+				a.addEventListener('mouseup', (event: MouseEvent) => {
+					if (event.button !== MouseButton.Right) return;
+					event.preventDefault();
+					event.stopPropagation();
+					const pos = { x: event.clientX, y: event.clientY };
+					setTimeout(() => uiHelper.openContextMenuAt(this.app, this, pos, a.dataset.secret || ''), 0);
+				});
+
+				a.addEventListener('contextmenu', (event: MouseEvent) => {
+					event.preventDefault();
+				});
 			}
 		}
 	}
 
 	private processEncryptedCodeBlockProcessor(source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) {
+		el.createEl('a', {cls: 'inline-encrypter-code'});
+
 		const uiHelper = new UiHelper();
-		const codeblock = el.createEl('a', {cls: 'inline-encrypter-code'});
-		codeblock.onClickEvent((event: MouseEvent) => uiHelper.handleDecryptClick(this.app, this, event, source));
+		const a = el.querySelector('a.inline-encrypter-code') as HTMLAnchorElement | null;
+		if (!a) {
+			return;
+		}
+
+		a.dataset.secret = source.trim();
+
+		a.addEventListener('click', (event: MouseEvent) => {
+			if (event.button !== MouseButton.Left) return;
+			uiHelper.handleDecryptClick(this.app, this, event, a.dataset.secret || '');
+		});
+
+		a.addEventListener(
+			'mousedown',
+			(event: MouseEvent) => {
+				if (event.button === MouseButton.Right) {
+					event.preventDefault();
+					event.stopPropagation();
+					event.stopImmediatePropagation?.();
+				}
+			},
+			{ capture: true }
+		);
+
+		a.addEventListener('mouseup', (event: MouseEvent) => {
+			if (event.button !== MouseButton.Right) return;
+			event.preventDefault();
+			event.stopPropagation();
+			const pos = { x: event.clientX, y: event.clientY };
+			setTimeout(() => uiHelper.openContextMenuAt(this.app, this, pos, a.dataset.secret || ''), 0);
+		});
+
+		a.addEventListener('contextmenu', (event: MouseEvent) => {
+			event.preventDefault();
+		});
 	}
 
 }
