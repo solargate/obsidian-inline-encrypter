@@ -42,4 +42,4 @@ jobs:
           gh release create "$tag" \
             --title="$tag" \
             --draft \
-            main.js manifest.json styles.css ${{ github.event.repository.name }}-$tag.zip
+            main.js manifest.json styles.css tools/decrypt.html ${{ github.event.repository.name }}-$tag.zip
