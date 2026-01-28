@@ -25,7 +25,12 @@ jobs:
       - name: Create package
         run: |
           mkdir ${{ github.event.repository.name }}
+          mkdir ${{ github.event.repository.name }}/docs
+          mkdir ${{ github.event.repository.name }}/docs/images
+          mkdir ${{ github.event.repository.name }}/tools
           cp main.js manifest.json styles.css README.md ${{ github.event.repository.name }}
+          cp docs/images/* ${{ github.event.repository.name }}/docs/images
+          cp tools/* ${{ github.event.repository.name }}/tools
           zip -r ${{ github.event.repository.name }}.zip ${{ github.event.repository.name }}
     
       - name: Create release
