@@ -62,7 +62,7 @@ You can also use context menu (right click) to choose decryption method.
 
 ![Choosing decryption method from context menu](docs/images/screen_08_context_menu.png)
 
-## Decryption outside Obsidian
+### Decryption outside Obsidian
 
 You can use external decryptor tool to decrypt secrets outside Obsidian: [tools/decrypt.html](tools/decrypt.html). It's just one HTML file which you can open in your browser.
 
