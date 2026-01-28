@@ -2,46 +2,47 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Inline Encrypter - offline decrypter</title>
+  <title>Inline Encrypter - external decrypter</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root { color-scheme: light dark; }
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 1rem; line-height: 1.45; }
+    html { background-color: #f5f5f5; }
+    body { font-family: system-ui, sans-serif; margin: 1rem; line-height: 1.45; }
     h1 { font-size: 1.25rem; margin: 0 0 1rem; }
     .row { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; margin-bottom: .75rem; }
-    textarea { width: 100%; min-height: 12rem; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    textarea { width: 100%; min-height: 12rem; font-family: ui-monospace, monospace; }
     input[type="password"], input[type="text"] { width: 24rem; max-width: 100%; }
     button { padding: .5rem .9rem; }
-    .out { white-space: pre-wrap; word-break: break-word; border: 1px solid #7775; border-radius: .5rem; padding: .5rem; margin-top: .5rem; }
     .muted { opacity: .75; }
     .small { font-size: .9rem; }
   </style>
 </head>
 <body>
-  <h1>Inline Encrypter - offline decrypter</h1>
+  <h1>Inline Encrypter - external decrypter</h1>
+
+  <div class="row">
+    <p>Use this tool to decode secrets without using the Obsidian Inline Encrypter plugin. You can paste text below or select one or more files to decode.</p>
+  </div>
 
   <div class="row">
     <label class="small">Password:</label>
-    <input id="password" type="password" placeholder="Enter password for decrypt" />
-    <button id="btn-decrypt-text">Decrypt from text below</button>
+    <input id="password" type="password" placeholder="Enter password" />
+    <input id="file-input" type="file" accept=".md,.txt" multiple />
+    <button id="btn-decrypt-text">Decrypt</button>
     <button id="btn-copy">Copy result</button>
   </div>
 
   <div class="row">
+    <label class="small"><b>Note:</b></label>
     <textarea id="input" placeholder="Insert note"></textarea>
   </div>
 
-  <div class="row">
-    <input id="file-input" type="file" accept=".md,.txt" multiple />
-    <button id="btn-decrypt-files">Decrypt selected files</button>
+  <div class="row" style="flex-direction: column; align-items: stretch;">
+    <label class="small"><b>Result:</b></label>
+    <textarea id="output" placeholder="Decrypted result"></textarea>
   </div>
 
   <div id="summary" class="small muted"></div>
-
-  <div class="row">
-    <div class="small muted">Result:</div>
-    <div id="output" class="out"></div>
-  </div>
 
   <script>
     const ENCRYPTED_CODE_PREFIX = 'secret';
@@ -49,7 +50,6 @@
       "```" + ENCRYPTED_CODE_PREFIX + "\\s*\\n([\\s\\S]*?)\\n```",
       "g"
     );
-
     const inlineRe = /`secret\s+([^`]+?)`/g;
 
     const $ = (sel) => document.querySelector(sel);
@@ -59,8 +59,19 @@
     const summaryEl = $('#summary');
     const fileInputEl = $('#file-input');
     const btnDecryptText = $('#btn-decrypt-text');
-    const btnDecryptFiles = $('#btn-decrypt-files');
     const btnCopy = $('#btn-copy');
+
+    fileInputEl.addEventListener('change', async () => {
+      const files = Array.from(fileInputEl.files || []);
+      if (!files.length) return;
+
+      let combined = '';
+      for (const f of files) {
+        const text = await f.text();
+        combined += (combined ? '\n\n' : '') + `===== file: ${f.name} =====\n` + text;
+      }
+      inputEl.value = combined;
+    });
 
     btnDecryptText.addEventListener('click', async () => {
       const pwd = passwordEl.value || '';
@@ -68,29 +79,12 @@
       if (!pwd) return alert('Enter password');
       if (!text) return alert('Insert note text');
       const { result, stats } = await decryptDocument(text, pwd);
-      outputEl.textContent = result;
-      renderSummary(stats);
-    });
-
-    btnDecryptFiles.addEventListener('click', async () => {
-      const pwd = passwordEl.value || '';
-      if (!pwd) return alert('Enter password');
-      const files = Array.from(fileInputEl.files || []);
-      if (!files.length) return alert('Choose files');
-
-      let combined = '';
-      for (const f of files) {
-        const text = await f.text();
-        combined += `\n\n<!-- file: ${f.name} -->\n` + text;
-      }
-      inputEl.value = combined.trim();
-      const { result, stats } = await decryptDocument(combined, pwd);
-      outputEl.textContent = result;
+      outputEl.value = result;
       renderSummary(stats);
     });
 
     btnCopy.addEventListener('click', async () => {
-      const text = outputEl.textContent || '';
+      const text = outputEl.value || '';
       if (!text) return;
       await navigator.clipboard.writeText(text);
       alert('Result copied to clipboard');
@@ -99,23 +93,51 @@
     function renderSummary(stats) {
       const { totalFenced, totalInline, ok, fail } = stats;
       summaryEl.innerHTML = `
-        Blocks found: fenced=${totalFenced}, inline=${totalInline}.
-        Success: ${ok}, Errors: ${fail}
+        Blocks found: inline ${totalInline}, fenced ${totalFenced}<br>
+        Success: ${ok}<br>Errors: ${fail}
       `;
     }
 
     async function decryptDocument(text, password) {
-      const matches = extractMatches(text);
-      let ok = 0, fail = 0;
+      const totalFenced = countMatches(text, fencedRe);
+      const totalInline = countMatches(text, inlineRe);
+
+      const pass1 = await decryptByRegex(text, fencedRe, password);
+      const pass2 = await decryptByRegex(pass1.out, inlineRe, password);
+
+      return {
+        result: pass2.out,
+        stats: {
+          totalFenced,
+          totalInline,
+          ok: pass1.ok + pass2.ok,
+          fail: pass1.fail + pass2.fail
+        }
+      };
+    }
+
+    async function decryptByRegex(text, re, password) {
+      const matches = [];
+      re.lastIndex = 0;
+      let m;
+      while ((m = re.exec(text)) !== null) {
+        matches.push({
+          start: m.index,
+          end: m.index + m[0].length,
+          payload: (m[1] || '').trim()
+        });
+      }
 
       matches.sort((a, b) => b.start - a.start);
 
       let out = text;
-      for (const m of matches) {
+      let ok = 0, fail = 0;
+
+      for (const item of matches) {
         try {
-          const payload = normalizeEncryptedInput(m.payload);
+          const payload = normalizeEncryptedInput(item.payload);
           const plain = await decryptImpl(payload, password);
-          out = out.slice(0, m.start) + plain + out.slice(m.end);
+          out = out.slice(0, item.start) + plain + out.slice(item.end);
           ok++;
         } catch (e) {
           console.error('Decrypt error:', e);
@@ -123,39 +145,7 @@
         }
       }
 
-      return {
-        result: out,
-        stats: { totalFenced: countMatches(text, fencedRe), totalInline: countMatches(text, inlineRe), ok, fail }
-      };
-    }
-
-    function extractMatches(text) {
-      const result = [];
-
-      fencedRe.lastIndex = 0;
-      let m;
-      while ((m = fencedRe.exec(text)) !== null) {
-        const payload = (m[1] || '').trim();
-        result.push({
-          type: 'fenced',
-          start: m.index,
-          end: m.index + m[0].length,
-          payload
-        });
-      }
-
-      inlineRe.lastIndex = 0;
-      while ((m = inlineRe.exec(text)) !== null) {
-        const payload = (m[1] || '').trim();
-        result.push({
-          type: 'inline',
-          start: m.index,
-          end: m.index + m[0].length,
-          payload
-        });
-      }
-
-      return result;
+      return { out, ok, fail };
     }
 
     function countMatches(text, re) {
