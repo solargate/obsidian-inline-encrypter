@@ -15,6 +15,7 @@ export const DEFAULT_SETTINGS: InlineEncrypterPluginSettings = {
 
 export class InlineEncrypterSettingTab extends PluginSettingTab {
 	plugin: InlineEncrypterPlugin;
+    icon = "lock";
 
 	constructor(app: App, plugin: InlineEncrypterPlugin) {
 		super(app, plugin);
