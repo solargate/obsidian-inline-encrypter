@@ -34,7 +34,7 @@ export class CryptoFactory {
 			{
 				name: 'PBKDF2',
 				hash: {name: 'SHA-512'},
-                salt: salt,
+                salt: salt.slice().buffer,
 				iterations: this.iterations
 			},
 			key,
