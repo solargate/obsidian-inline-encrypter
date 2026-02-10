@@ -52,6 +52,10 @@ Live Preview mode is also supported. Buttons for secrets decryption are clickabl
 
 ![Selecting secret in common code block](docs/images/screen_06_secret_select_block.png)
 
+You can also just set the cursor inside encrypted block.
+
+![Selecting secret in block](docs/images/screen_09_secret_without_selection.png)
+
 4. Run **Decrypt selected text** from command palette.
 
 5. Enter the password for decryption.

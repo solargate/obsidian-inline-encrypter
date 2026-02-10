@@ -1,4 +1,4 @@
-import { Editor, MarkdownView, Notice, Plugin, MarkdownPostProcessorContext } from 'obsidian';
+import { Editor, MarkdownView, Notice, Plugin, MarkdownPostProcessorContext, EditorPosition } from 'obsidian';
 
 import { InlineEncrypterPluginSettings, InlineEncrypterSettingTab, DEFAULT_SETTINGS} from 'Settings';
 import { ModalPassword } from 'ModalPassword';
@@ -119,6 +119,17 @@ export default class InlineEncrypterPlugin extends Plugin {
     }
 
     private async processInlineDecryptCommand(editor: Editor) {
+		let selected = editor.getSelection();
+		if (!selected || selected.length === 0) {
+			const block = this.findEncryptedBlockAtCursor(editor);
+			if (block) {
+				editor.setSelection(block.from, block.to);
+			} else {
+				new Notice('❌ Encrypted block not found');
+				return;
+			}
+		}
+
 		if (editor.somethingSelected()) {
 			let input = editor.getSelection();
 			const passModal = new ModalPassword(this.app, EncryptedTextType.Inline);
@@ -140,6 +151,7 @@ export default class InlineEncrypterPlugin extends Plugin {
 			passModal.open();
 		} else {
 			new Notice('❌ No selected text for decryption');
+			return;
 		}
     }
 
@@ -190,6 +202,56 @@ export default class InlineEncrypterPlugin extends Plugin {
 			ev.stopImmediatePropagation?.();
 			setTimeout(() => uiHelper.openContextMenuAtEvent(this.app, this, ev, btn.dataset.secret || ''), 0);
 		}, { capture: true });
+	}
+
+	private findEncryptedBlockAtCursor(editor: Editor): { from: EditorPosition; to: EditorPosition } | null {
+		const cursor = editor.getCursor();
+		const lineText = editor.getLine(cursor.line) ?? '';
+
+		const before = lineText.slice(0, cursor.ch);
+		const after = lineText.slice(cursor.ch);
+		const left = before.lastIndexOf('`');
+		const right = after.indexOf('`');
+
+		if (left >= 0 && right >= 0) {
+			const content = lineText.slice(left + 1, cursor.ch + right);
+			const trimmed = content.trimStart();
+			if (trimmed.startsWith(ENCRYPTED_CODE_PREFIX)) {
+				return {
+					from: { line: cursor.line, ch: left },
+					to: { line: cursor.line, ch: cursor.ch + right + 1 },
+				};
+			}
+		}
+
+		const openRe = new RegExp("^```\\s*" + ENCRYPTED_CODE_PREFIX + "\\b", "i");
+		const fenceRe = /^```+/;
+
+		let openLine = -1;
+		for (let i = cursor.line; i >= 0; i--) {
+			const t = editor.getLine(i) ?? '';
+			if (fenceRe.test(t)) {
+				if (openRe.test(t)) openLine = i;
+				break;
+			}
+		}
+
+		if (openLine >= 0) {
+			const last = editor.lastLine();
+			let closeLine = -1;
+			for (let i = openLine + 1; i <= last; i++) {
+				const t = editor.getLine(i) ?? '';
+				if (fenceRe.test(t)) { closeLine = i; break; }
+			}
+			if (closeLine > openLine) {
+				return {
+					from: { line: openLine, ch: 0 },
+					to: { line: closeLine, ch: editor.getLine(closeLine)?.length ?? 0 },
+				};
+			}
+		}
+
+		return null;
 	}
 
 }
