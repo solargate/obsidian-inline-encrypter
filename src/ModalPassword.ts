@@ -13,6 +13,7 @@ export class ModalPassword extends Modal {
 		super(app);
 		this.password = State.passwordGlobal;
 		this.input = '';
+		this.isPassword = false;
 		this.textType = textType;
 	}
 

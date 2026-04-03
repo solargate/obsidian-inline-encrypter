@@ -1,4 +1,4 @@
-import { Editor, MarkdownView, Notice, Plugin, MarkdownPostProcessorContext, EditorPosition } from 'obsidian';
+import { Editor, MarkdownView, MarkdownFileInfo, Notice, Plugin, MarkdownPostProcessorContext, EditorPosition } from 'obsidian';
 
 import { InlineEncrypterPluginSettings, InlineEncrypterSettingTab, DEFAULT_SETTINGS} from 'Settings';
 import { ModalPassword } from 'ModalPassword';
@@ -9,7 +9,7 @@ import { ENCRYPTED_CODE_PREFIX, CodeBlockType, EncryptedTextType, MouseButton } 
 import { saveStatePasswordGlobal, saveStatePasswordRemember } from 'Globals';
 
 export default class InlineEncrypterPlugin extends Plugin {
-	settings: InlineEncrypterPluginSettings;
+	settings!: InlineEncrypterPluginSettings;
 	cryptoFactory = new CryptoFactory();
 
 	async onload() {
@@ -25,28 +25,28 @@ export default class InlineEncrypterPlugin extends Plugin {
 			id: 'encrypt',
 			name: 'Encrypt selected text',
 			icon: 'lock',
-			editorCallback: (editor: Editor, view: MarkdownView) => this.processInlineEncryptCommand(editor, CodeBlockType.Inline, EncryptedTextType.Inline)
+			editorCallback: (editor: Editor, _view: MarkdownView | MarkdownFileInfo) => this.processInlineEncryptCommand(editor, CodeBlockType.Inline, EncryptedTextType.Inline)
 		});
 
 		this.addCommand({
 			id: 'encrypt-code',
 			name: 'Encrypt selected text as code block',
 			icon: 'lock',
-			editorCallback: (editor: Editor, view: MarkdownView) => this.processInlineEncryptCommand(editor, CodeBlockType.Common, EncryptedTextType.Inline)
+			editorCallback: (editor: Editor, _view: MarkdownView | MarkdownFileInfo) => this.processInlineEncryptCommand(editor, CodeBlockType.Common, EncryptedTextType.Inline)
 		});
 
 		this.addCommand({
 			id: 'encrypt-pre',
 			name: 'Insert pre-encrypted text',
 			icon: 'lock',
-			editorCallback: (editor: Editor, view: MarkdownView) => this.processInlineEncryptCommand(editor, CodeBlockType.Inline, EncryptedTextType.PreEncrypted)
+			editorCallback: (editor: Editor, _view: MarkdownView | MarkdownFileInfo) => this.processInlineEncryptCommand(editor, CodeBlockType.Inline, EncryptedTextType.PreEncrypted)
 		});
 
 		this.addCommand({
 			id: 'decrypt',
 			name: 'Decrypt selected text',
 			icon: 'lock',
-			editorCallback: (editor: Editor, view: MarkdownView) => this.processInlineDecryptCommand(editor)
+			editorCallback: (editor: Editor, _view: MarkdownView | MarkdownFileInfo) => this.processInlineDecryptCommand(editor)
 		});
 
 		console.log('Inline Encrypter plugin loaded')
