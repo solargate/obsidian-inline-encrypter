@@ -42,7 +42,7 @@ export const livePreviewExtension = (app: App, plugin: InlineEncrypterPlugin) =>
                 enter(node) {
                     if (node.type.name.startsWith("inline-code")) {
                         const value = view.state.doc.sliceString(node.from, node.to)
-                        const isEncrypted = value.indexOf(ENCRYPTED_CODE_PREFIX) === 0;
+                        const isEncrypted = value.startsWith(ENCRYPTED_CODE_PREFIX + ' ');
 
                         if (isEncrypted) {
                             if (!uiHelper.selectionAndRangeOverlap(selection, node.from-1, node.to+1)) {
