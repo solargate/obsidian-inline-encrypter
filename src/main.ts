@@ -163,7 +163,7 @@ export default class InlineEncrypterPlugin extends Plugin {
 
 		codes.forEach((codeEl) => {
 			const raw = (codeEl.textContent || '').trim();
-			if (!raw || !raw.startsWith(ENCRYPTED_CODE_PREFIX)) return;
+			if (!raw || !raw.startsWith(ENCRYPTED_CODE_PREFIX + ' ')) return;
 
 			codeEl.innerText = '';
 			const btn = codeEl.createEl('a', {cls: 'inline-encrypter-code'});
@@ -216,7 +216,7 @@ export default class InlineEncrypterPlugin extends Plugin {
 		if (left >= 0 && right >= 0) {
 			const content = lineText.slice(left + 1, cursor.ch + right);
 			const trimmed = content.trimStart();
-			if (trimmed.startsWith(ENCRYPTED_CODE_PREFIX)) {
+			if (trimmed.startsWith(ENCRYPTED_CODE_PREFIX + ' ')) {
 				return {
 					from: { line: cursor.line, ch: left },
 					to: { line: cursor.line, ch: cursor.ch + right + 1 },
@@ -224,7 +224,7 @@ export default class InlineEncrypterPlugin extends Plugin {
 			}
 		}
 
-		const openRe = new RegExp("^```\\s*" + ENCRYPTED_CODE_PREFIX + "\\b", "i");
+		const openRe = new RegExp("^```\\s*" + ENCRYPTED_CODE_PREFIX + "\\s*$", "i");
 		const fenceRe = /^```+/;
 
 		let openLine = -1;
