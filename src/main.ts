@@ -162,6 +162,7 @@ export default class InlineEncrypterPlugin extends Plugin {
 		if (!codes || codes.length === 0) return;
 
 		codes.forEach((codeEl) => {
+			if (codeEl.parentElement?.tagName === 'PRE') return;
 			const raw = (codeEl.textContent || '').trim();
 			if (!raw || !raw.startsWith(ENCRYPTED_CODE_PREFIX + ' ')) return;
 
