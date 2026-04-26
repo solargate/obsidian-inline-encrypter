@@ -177,13 +177,20 @@ export default class InlineEncrypterPlugin extends Plugin {
 			});
 
 			btn.addEventListener('contextmenu', (ev: MouseEvent) => {
+				if (ev.ctrlKey) {
+					ev.preventDefault();
+					ev.stopPropagation();
+					ev.stopImmediatePropagation?.();
+					uiHelper.handleDecryptClick(this.app, this, ev, btn.dataset.secret || '');
+					return;
+				}
 				ev.preventDefault();
 				ev.stopPropagation();
 				ev.stopImmediatePropagation?.();
 				setTimeout(() => uiHelper.openContextMenuAtEvent(this.app, this, ev, btn.dataset.secret || ''), 0);
 			}, { capture: true });
 		});
-	}
+	};
 
 	private processEncryptedCodeBlockProcessor(source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) {
 		const uiHelper = new UiHelper();
@@ -198,6 +205,13 @@ export default class InlineEncrypterPlugin extends Plugin {
 		});
 
 		btn.addEventListener('contextmenu', (ev: MouseEvent) => {
+			if (ev.ctrlKey) {
+				ev.preventDefault();
+				ev.stopPropagation();
+				ev.stopImmediatePropagation?.();
+				uiHelper.handleDecryptClick(this.app, this, ev, btn.dataset.secret || '');
+				return;
+			}
 			ev.preventDefault();
 			ev.stopPropagation();
 			ev.stopImmediatePropagation?.();

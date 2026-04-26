@@ -36,6 +36,17 @@ export class InlineWidget extends WidgetType {
 
         a.addEventListener('contextmenu', (event: MouseEvent) => {
             event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+            if (event.ctrlKey) {
+                const clickEvent = new MouseEvent('click', {
+                    ctrlKey: true,
+                    bubbles: true,
+                    cancelable: true,
+                    view: window,
+                });
+                a.dispatchEvent(clickEvent);
+            }
         });
 
         return div;
