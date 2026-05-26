@@ -7,8 +7,7 @@
 	"author": "Alexander Cheryomukhin",
 	"authorUrl": "https://github.com/solargate",
 	"fundingUrl": {
-		"DonationAlerts": "https://dalink.to/solargate",
-		"Cryptocurrency": "https://github.com/solargate/obsidian-inline-encrypter/blob/master/DONATIONS.md"
+		"DonationAlerts": "https://dalink.to/solargate"
 	},
 	"isDesktopOnly": false
 }
