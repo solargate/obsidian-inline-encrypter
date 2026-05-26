@@ -83,7 +83,7 @@ export default class InlineEncrypterPlugin extends Plugin {
 					if (passModal.password.length === 0) {
 						new Notice('⚠️ Password is empty');
 					}
-					new Notice('✅ Text encrypted');				
+					new Notice('✅ Text encrypted');
 				}
 				passModal.open();
 			} else {
@@ -108,13 +108,13 @@ export default class InlineEncrypterPlugin extends Plugin {
 					if (passModal.password.length === 0) {
 						new Notice('⚠️ Password is empty');
 					}
-					new Notice('✅ Text encrypted');				
+					new Notice('✅ Text encrypted');
 				}
 				else {
-					new Notice('❌ No text for encryption');	
+					new Notice('❌ No text for encryption');
 				}
 			}
-			passModal.open();		
+			passModal.open();
 		}
     }
 
