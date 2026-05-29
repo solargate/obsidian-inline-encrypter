@@ -3,10 +3,10 @@ import { EditorView, WidgetType } from "@codemirror/view";
 
 import InlineEncrypterPlugin from 'main';
 import { UiHelper } from 'UiHelper';
-import { MouseButton } from 'Constants';
+import { ENCRYPTED_CODE_SVG, MouseButton } from 'Constants';
 
 export class InlineWidget extends WidgetType {
-    
+
     plugin: InlineEncrypterPlugin;
 
     constructor(public app: App, plugin: InlineEncrypterPlugin, public value: string) {
@@ -18,8 +18,8 @@ export class InlineWidget extends WidgetType {
         const uiHelper = new UiHelper();
         const div = document.createElement('div');
         div.addClass('inline-encrypter-lp-code');
-        const a = div.createEl('a');
-        a.addClass('inline-encrypter-code');
+        const a = div.createEl('a', {cls: 'inline-encrypter-code'});
+        a.innerHTML = ENCRYPTED_CODE_SVG;
 
         a.addEventListener('click', (event: MouseEvent) => {
             if (event.button !== MouseButton.Left) return;

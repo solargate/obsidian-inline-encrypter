@@ -5,7 +5,7 @@ import { ModalPassword } from 'ModalPassword';
 import { CryptoFactory } from 'CryptoFactory';
 import { UiHelper } from 'UiHelper';
 import { livePreviewExtension } from 'LivePreviewExtension';
-import { ENCRYPTED_CODE_PREFIX, CodeBlockType, EncryptedTextType, MouseButton } from 'Constants';
+import { ENCRYPTED_CODE_PREFIX, ENCRYPTED_CODE_SVG, CodeBlockType, EncryptedTextType, MouseButton } from 'Constants';
 import { saveStatePasswordGlobal, saveStatePasswordRemember } from 'Globals';
 
 export default class InlineEncrypterPlugin extends Plugin {
@@ -168,6 +168,7 @@ export default class InlineEncrypterPlugin extends Plugin {
 
 			codeEl.innerText = '';
 			const btn = codeEl.createEl('a', {cls: 'inline-encrypter-code'});
+			btn.innerHTML = ENCRYPTED_CODE_SVG;
 			btn.dataset.secret = raw;
 
 			btn.addEventListener('click', (ev: MouseEvent) => {
@@ -196,6 +197,7 @@ export default class InlineEncrypterPlugin extends Plugin {
 		const uiHelper = new UiHelper();
 
 		const btn = el.createEl('a', {cls: 'inline-encrypter-code'});
+		btn.innerHTML = ENCRYPTED_CODE_SVG;
 		btn.dataset.secret = (source || '').trim();
 
 		btn.addEventListener('click', (ev: MouseEvent) => {
