@@ -4,6 +4,7 @@ import { EditorView, WidgetType } from "@codemirror/view";
 import InlineEncrypterPlugin from 'main';
 import { UiHelper } from 'UiHelper';
 import { ENCRYPTED_CODE_SVG, MouseButton } from 'Constants';
+import { appendTrustedSvg } from 'DomHelper';
 
 export class InlineWidget extends WidgetType {
 
@@ -16,10 +17,9 @@ export class InlineWidget extends WidgetType {
 
     toDOM(view: EditorView): HTMLElement {
         const uiHelper = new UiHelper();
-        const div = document.createElement('div');
-        div.addClass('inline-encrypter-lp-code');
+        const div = createDiv({ cls: 'inline-encrypter-lp-code' });
         const a = div.createEl('a', {cls: 'inline-encrypter-code'});
-        a.innerHTML = ENCRYPTED_CODE_SVG;
+        appendTrustedSvg(a, ENCRYPTED_CODE_SVG);
 
         a.addEventListener('click', (event: MouseEvent) => {
             if (event.button !== MouseButton.Left) return;
@@ -31,7 +31,7 @@ export class InlineWidget extends WidgetType {
             event.preventDefault();
             event.stopPropagation();
             const pos = { x: event.clientX, y: event.clientY };
-            setTimeout(() => uiHelper.openContextMenuAt(this.app, this.plugin, pos, this.value), 0);
+            window.setTimeout(() => uiHelper.openContextMenuAt(this.app, this.plugin, pos, this.value), 0);
         });
 
         a.addEventListener('contextmenu', (event: MouseEvent) => {

@@ -19,7 +19,7 @@ export class ModalDecrypt extends Modal {
         contentEl.createEl("h1", {text: "Decrypted secret"});
 
 		let textArea: TextAreaComponent;
-		const textVal = new Setting(contentEl).addTextArea(cb => {
+		const textVal = new Setting(contentEl).addTextArea(async cb => {
             textArea = cb;
             cb.setValue(this.text);
             cb.inputEl.setSelectionRange(0,0)
@@ -27,17 +27,25 @@ export class ModalDecrypt extends Modal {
 			cb.inputEl.cols = 50
             cb.inputEl.rows = 10;
 			if (this.autoCopy == true) {
-				navigator.clipboard.writeText( textArea.getValue());
-				new Notice('Secret copied');
+				try {
+					await navigator.clipboard.writeText(textArea.getValue());
+					new Notice('Secret copied');
+				} catch {
+					new Notice('Failed to copy to clipboard');
+				}
 			}
 		})
         textVal.settingEl.querySelector('.setting-item-info')?.remove();
 
 		const buttons = new Setting(contentEl);
 		buttons.addButton( cb => {
-			cb.setButtonText('Copy to clipboard').onClick(evt => {
-				navigator.clipboard.writeText( textArea.getValue());
-				new Notice('Secret copied');
+			cb.setButtonText('Copy to clipboard').onClick(async () => {
+				try {
+					await navigator.clipboard.writeText(textArea.getValue());
+					new Notice('Secret copied');
+				} catch {
+					new Notice('Failed to copy to clipboard');
+				}
 			});
 		});
 	}
