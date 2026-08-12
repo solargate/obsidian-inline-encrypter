@@ -189,7 +189,7 @@ export default class InlineEncrypterPlugin extends Plugin {
 				ev.preventDefault();
 				ev.stopPropagation();
 				ev.stopImmediatePropagation?.();
-				setTimeout(() => uiHelper.openContextMenuAtEvent(this.app, this, ev, btn.dataset.secret || ''), 0);
+				window.setTimeout(() => uiHelper.openContextMenuAtEvent(this.app, this, ev, btn.dataset.secret || ''), 0);
 			}, { capture: true });
 		});
 	};
@@ -218,7 +218,7 @@ export default class InlineEncrypterPlugin extends Plugin {
 			ev.preventDefault();
 			ev.stopPropagation();
 			ev.stopImmediatePropagation?.();
-			setTimeout(() => uiHelper.openContextMenuAtEvent(this.app, this, ev, btn.dataset.secret || ''), 0);
+			window.setTimeout(() => uiHelper.openContextMenuAtEvent(this.app, this, ev, btn.dataset.secret || ''), 0);
 		}, { capture: true });
 	}
 

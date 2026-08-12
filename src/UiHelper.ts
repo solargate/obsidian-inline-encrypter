@@ -13,7 +13,7 @@ export class UiHelper {
 	public handleDecryptClick(app: App, plugin: InlineEncrypterPlugin, event: MouseEvent, input: string) {
 		event.preventDefault();
 		const copyOnly = !!event.ctrlKey;
-		this.decryptFlow(app, plugin, input, copyOnly);		
+		void this.decryptFlow(app, plugin, input, copyOnly);		
 	}
 
 	public openContextMenuAt(app: App, plugin: InlineEncrypterPlugin, pos: { x: number, y: number }, input: string) {
@@ -23,14 +23,14 @@ export class UiHelper {
 			item
 				.setTitle('Decrypt')
 				.setIcon('lock-open')
-				.onClick(() => this.decryptFlow(app, plugin, input, false))
+				.onClick(() => { void this.decryptFlow(app, plugin, input, false); })
 		);
 
 		menu.addItem(item =>
 			item
 				.setTitle('Decrypt and copy')
 				.setIcon('copy')
-				.onClick(() => this.decryptFlow(app, plugin, input, true))
+				.onClick(() => { void this.decryptFlow(app, plugin, input, true); })
 		);
 
 		menu.showAtPosition(pos);
@@ -43,14 +43,14 @@ export class UiHelper {
 			item
 				.setTitle('Decrypt')
 				.setIcon('lock-open')
-				.onClick(() => this.decryptFlow(app, plugin, input, false))
+				.onClick(() => { void this.decryptFlow(app, plugin, input, false); })
 		);
 
 		menu.addItem(item =>
 			item
 				.setTitle('Decrypt and copy')
 				.setIcon('copy')
-				.onClick(() => this.decryptFlow(app, plugin, input, true))
+				.onClick(() => { void this.decryptFlow(app, plugin, input, true); })
 		);
 
 		menu.showAtMouseEvent(ev);

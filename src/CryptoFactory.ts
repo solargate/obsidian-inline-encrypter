@@ -108,7 +108,7 @@ export class CryptoFactory {
 			const utf8Decoder	= new TextDecoder();
 			const decryptedText = utf8Decoder.decode(decryptedBytes);
 			return decryptedText;
-		} catch (e) {
+		} catch {
 			return null;
 		}
 	}
@@ -117,7 +117,7 @@ export class CryptoFactory {
 		try {
 			const bytesToDecode = this.convertStringToArray(atob(base64Encoded));
 			return await this.decryptFromBytes(bytesToDecode, password);
-		} catch (e) {
+		} catch {
 			return null;
 		}
 	}
