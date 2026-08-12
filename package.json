@@ -1,6 +1,6 @@
 {
 	"name": "inline-encrypter",
-	"version": "1.5.13",
+	"version": "1.5.12",
 	"description": "A simple plugin for inline encrypting in Obsidian notes",
 	"main": "main.js",
 	"scripts": {
@@ -16,13 +16,13 @@
 		"@typescript-eslint/eslint-plugin": "^8.56.0",
 		"@typescript-eslint/parser": "^8.56.0",
 		"esbuild": "0.25.0",
-		"obsidian": "latest",
+		"obsidian": "1.11.4",
 		"tslib": "2.4.0",
 		"typescript": "^5.9.3"
 	},
 	"dependencies": {
 		"@codemirror/language": "^6.9.2",
-		"@codemirror/state": "^6.7.1",
-		"@codemirror/view": "^6.43.8"
+		"@codemirror/state": "6.5.0",
+		"@codemirror/view": "6.38.6"
 	}
 }

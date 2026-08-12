@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
 
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v5
         with:
           node-version: "22.x"
 
@@ -32,7 +32,7 @@ jobs:
           cp docs/images/* ${{ github.event.repository.name }}/docs/images
           cp tools/* ${{ github.event.repository.name }}/tools
           zip -r ${{ github.event.repository.name }}.zip ${{ github.event.repository.name }}
-    
+
       - name: Create release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
