@@ -68,28 +68,30 @@ export class UiHelper {
 		const cryptoFactory = new CryptoFactory();
 		const passModal = new ModalPassword(app, EncryptedTextType.Inline);
 
-		passModal.onClose = async () => {
-			if (!passModal.isPassword) return;
+		passModal.onClose = () => {
+			void (async () => {
+				if (!passModal.isPassword) return;
 
-			const cleaned = this.normalizeEncryptedInput(input);
-			const output = await cryptoFactory.decryptFromBase64(cleaned, passModal.password);
+				const cleaned = this.normalizeEncryptedInput(input);
+				const output = await cryptoFactory.decryptFromBase64(cleaned, passModal.password);
 
-			if (output === null) {
-				new Notice('❌ Decryption failed!');
-				saveStatePasswordGlobal('');
-				return;
-			}
-
-			if (copyOnly) {
-				try {
-					await navigator.clipboard.writeText(output);
-					new Notice('Secret copied');
-				} catch {
-					new Notice('Failed to copy to clipboard');
+				if (output === null) {
+					new Notice('❌ Decryption failed!');
+					saveStatePasswordGlobal('');
+					return;
 				}
-			} else {
-				new ModalDecrypt(app, output, plugin.settings.autoCopy).open();
-			}
+
+				if (copyOnly) {
+					try {
+						await navigator.clipboard.writeText(output);
+						new Notice('Secret copied');
+					} catch {
+						new Notice('Failed to copy to clipboard');
+					}
+				} else {
+					new ModalDecrypt(app, output, plugin.settings.autoCopy).open();
+				}
+			})();
 		};
 
 		passModal.open();

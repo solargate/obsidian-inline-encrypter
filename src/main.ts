@@ -50,11 +50,9 @@ export default class InlineEncrypterPlugin extends Plugin {
 			editorCallback: (editor: Editor, _view: MarkdownView | MarkdownFileInfo) => this.processInlineDecryptCommand(editor)
 		});
 
-		console.log('Inline Encrypter plugin loaded')
 	}
 
 	onunload() {
-		console.log('Inline Encrypter plugin unloaded')
 	}
 
 	async loadSettings() {
@@ -70,21 +68,23 @@ export default class InlineEncrypterPlugin extends Plugin {
 			if (editor.somethingSelected()) {
 				const input = editor.getSelection();
 				const passModal = new ModalPassword(this.app, textType);
-				passModal.onClose = async () => {
-					if (!passModal.isPassword) {
-						return;
-					}
-					const output = await this.cryptoFactory.encryptToBase64(input, passModal.password);
-					if (codeBlockType === CodeBlockType.Inline) {
-						editor.replaceSelection('`' + ENCRYPTED_CODE_PREFIX + ' ' + output + '`');
-					}
-					if (codeBlockType === CodeBlockType.Common) {
-						editor.replaceSelection('```' + ENCRYPTED_CODE_PREFIX + '\n' + output + '\n```');
-					}
-					if (passModal.password.length === 0) {
-						new Notice('⚠️ Password is empty');
-					}
-					new Notice('✅ Text encrypted');
+				passModal.onClose = () => {
+					void (async () => {
+						if (!passModal.isPassword) {
+							return;
+						}
+						const output = await this.cryptoFactory.encryptToBase64(input, passModal.password);
+						if (codeBlockType === CodeBlockType.Inline) {
+							editor.replaceSelection('`' + ENCRYPTED_CODE_PREFIX + ' ' + output + '`');
+						}
+						if (codeBlockType === CodeBlockType.Common) {
+							editor.replaceSelection('```' + ENCRYPTED_CODE_PREFIX + '\n' + output + '\n```');
+						}
+						if (passModal.password.length === 0) {
+							new Notice('⚠️ Password is empty');
+						}
+						new Notice('✅ Text encrypted');
+					})();
 				}
 				passModal.open();
 			} else {
@@ -93,27 +93,29 @@ export default class InlineEncrypterPlugin extends Plugin {
 		}
 		if (textType === EncryptedTextType.PreEncrypted) {
 			const passModal = new ModalPassword(this.app, textType);
-			passModal.onClose = async () => {
-				const input = passModal.input;
-				if (input.length > 0) {
-					if (!passModal.isPassword) {
-						return;
+			passModal.onClose = () => {
+				void (async () => {
+					const input = passModal.input;
+					if (input.length > 0) {
+						if (!passModal.isPassword) {
+							return;
+						}
+						const output = await this.cryptoFactory.encryptToBase64(input, passModal.password);
+						if (codeBlockType === CodeBlockType.Inline) {
+							editor.replaceSelection('`' + ENCRYPTED_CODE_PREFIX + ' ' + output + '`');
+						}
+						if (codeBlockType === CodeBlockType.Common) {
+							editor.replaceSelection('```' + ENCRYPTED_CODE_PREFIX + '\n' + output + '\n```');
+						}
+						if (passModal.password.length === 0) {
+							new Notice('⚠️ Password is empty');
+						}
+						new Notice('✅ Text encrypted');
 					}
-					const output = await this.cryptoFactory.encryptToBase64(input, passModal.password);
-					if (codeBlockType === CodeBlockType.Inline) {
-						editor.replaceSelection('`' + ENCRYPTED_CODE_PREFIX + ' ' + output + '`');
+					else {
+						new Notice('❌ No text for encryption');
 					}
-					if (codeBlockType === CodeBlockType.Common) {
-						editor.replaceSelection('```' + ENCRYPTED_CODE_PREFIX + '\n' + output + '\n```');
-					}
-					if (passModal.password.length === 0) {
-						new Notice('⚠️ Password is empty');
-					}
-					new Notice('✅ Text encrypted');
-				}
-				else {
-					new Notice('❌ No text for encryption');
-				}
+				})();
 			}
 			passModal.open();
 		}
@@ -134,20 +136,22 @@ export default class InlineEncrypterPlugin extends Plugin {
 		if (editor.somethingSelected()) {
 			let input = editor.getSelection();
 			const passModal = new ModalPassword(this.app, EncryptedTextType.Inline);
-			passModal.onClose = async () => {
-				if (!passModal.isPassword) {
-					return;
-				}
-				input = input.replace(ENCRYPTED_CODE_PREFIX, '').replace(/`/g, '').replace(/\s/g, '').replace(/\r?\n|\r/g, '');
-				const output = await this.cryptoFactory.decryptFromBase64(input, passModal.password);
-				if (output === null) {
-					new Notice('❌ Decryption failed!');
-					saveStatePasswordGlobal('');
-					return;
-				} else {
-					editor.replaceSelection(output);
-					new Notice('✅ Text decrypted')
-				}
+			passModal.onClose = () => {
+				void (async () => {
+					if (!passModal.isPassword) {
+						return;
+					}
+					input = input.replace(ENCRYPTED_CODE_PREFIX, '').replace(/`/g, '').replace(/\s/g, '').replace(/\r?\n|\r/g, '');
+					const output = await this.cryptoFactory.decryptFromBase64(input, passModal.password);
+					if (output === null) {
+						new Notice('❌ Decryption failed!');
+						saveStatePasswordGlobal('');
+						return;
+					} else {
+						editor.replaceSelection(output);
+						new Notice('✅ Text decrypted')
+					}
+				})();
 			}
 			passModal.open();
 		} else {
